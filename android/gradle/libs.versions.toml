@@ -1,5 +1,5 @@
 [versions]
-revanced-patcher = "21.0.0"
+revanced-patcher = "99.0.0"
 revanced-library = "3.0.2"
 desugar_jdk_libs = "2.1.3"
 
