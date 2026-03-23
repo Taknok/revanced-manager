@@ -16,8 +16,10 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.Closeable
 import java.io.File
+import java.io.FileInputStream
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.security.MessageDigest
 
 internal typealias PatchList = List<Patch>
 private typealias Patcher = (emit: (PatchResult) -> Unit) -> PatchesResult
@@ -78,6 +80,35 @@ class Session(
 
         val patcher = runStep(StepId.ReadAPK, onEvent) {
             prepareLogger.withJavaLogging {
+                prepareLogger.info("AaptBinaryPath: $aaptPath")
+                prepareLogger.info("FrameworkDir: $frameworkDir")
+                fun File.sha256(): String {
+                    val digest = MessageDigest.getInstance("SHA-256")
+
+                    inputStream().use { fis ->
+                        val buffer = ByteArray(8192)
+                        var read: Int
+                        while (fis.read(buffer).also { read = it } != -1) {
+                            digest.update(buffer, 0, read)
+                        }
+                    }
+
+                    return digest.digest().joinToString("") { "%02x".format(it) }
+                }
+                prepareLogger.info("Sha: ${input.sha256()}")
+                prepareLogger.info("Aapt executable: ${File(aaptPath).canExecute()}")
+                File(aaptPath).parentFile?.let { parent ->
+                    prepareLogger.info("Parent folder (${parent.absolutePath}) permissions: r=${parent.canRead()}, w=${parent.canWrite()}, x=${parent.canExecute()}")
+                }
+
+                val mounts = File("/proc/self/mountinfo").readLines()
+
+                val aaptFile = File(aaptPath)
+                mounts.forEach {
+                    if (aaptFile.absolutePath.contains(it.split(" ")[4])) {
+                        prepareLogger.info("Mount info: $it")
+                    }
+                }
                 patcher(
                     apkFile = input,
                     temporaryFilesPath = tempDir,
