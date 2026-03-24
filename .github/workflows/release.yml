@@ -56,17 +56,11 @@ jobs:
               run: |
                   echo "${{ secrets.KEYSTORE }}" | base64 --decode > "app/keystore.jks"
 
-            - name: Release API
-              run: npx multi-semantic-release --tag-format 'api@${version}' --ignore-packages app
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  ORG_GRADLE_PROJECT_githubPackagesUsername: ${{ github.actor }}
-                  ORG_GRADLE_PROJECT_githubPackagesPassword: ${{ secrets.GITHUB_TOKEN }}
-
             - name: Release
               id: release
               run: |
-                  npx multi-semantic-release --tag-format 'v${version}' --ignore-packages api
+                  export GRADLE_OPTS="-Dorg.gradle.logging.stacktrace=all"
+                  npx multi-semantic-release --debug --tag-format 'v${version}' --ignore-packages api
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   ORG_GRADLE_PROJECT_githubPackagesUsername: ${{ github.actor }}

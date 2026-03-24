@@ -145,6 +145,10 @@ android {
         minSdk {
             version = release(26)
         }
+        ndk {
+            abiFilters += "armeabi-v7a"
+            abiFilters += "arm64-v8a"
+        }
         targetSdk {
             version = release(36)
         }
