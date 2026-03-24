@@ -59,6 +59,7 @@ jobs:
             - name: Release
               id: release
               run: |
+                  export GRADLE_OPTS="-Dorg.gradle.logging.stacktrace=all"
                   npx multi-semantic-release --debug --tag-format 'v${version}' --ignore-packages api
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
