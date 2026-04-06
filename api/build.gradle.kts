@@ -74,13 +74,7 @@ apiValidation {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "githubPackages"
-            url = uri("https://maven.pkg.github.com/revanced/revanced-manager")
-            credentials(PasswordCredentials::class)
-        }
-    }
+
 
     publications {
         create<MavenPublication>("Api") {

@@ -145,6 +145,10 @@ android {
         minSdk {
             version = release(26)
         }
+        ndk {
+            abiFilters += "armeabi-v7a"
+            abiFilters += "arm64-v8a"
+        }
         targetSdk {
             version = release(36)
         }
@@ -179,10 +183,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            resValue("string", "app_name", "ReVanced Manager (Debug)")
-        }
-
         release {
             // Causes patching to not work properly, if enabled.
             isMinifyEnabled = false
@@ -191,10 +191,7 @@ android {
             val keystoreFile = file("keystore.jks")
 
             if (project.hasProperty("signAsDebug") || !keystoreFile.exists()) {
-                resValue("string", "app_name", "ReVanced Manager (Debug signed)")
                 signingConfig = signingConfigs.getByName("debug")
-
-                isPseudoLocalesEnabled = true
             } else {
                 signingConfig = signingConfigs.create("release") {
                     storeFile = keystoreFile
